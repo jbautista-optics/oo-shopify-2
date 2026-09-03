@@ -1,0 +1,1 @@
+# recspecs-shopify2

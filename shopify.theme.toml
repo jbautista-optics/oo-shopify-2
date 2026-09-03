@@ -1,0 +1,14 @@
+[environments.env1]
+# shopify theme dev --store libertysport.myshopify.com --environment env1
+# OO v2.0.0
+theme = "161418150134"
+store = "libertysport"
+password = "shptka_c6c31621c7417a953b3e6014d63e3613"
+ignore = [
+    "config/settings_data.json",
+    "sections/header-group.json",
+    "sections/footer-group.json",
+    "templates/index.json",
+    "templates/*.json"
+]
+
