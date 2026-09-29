@@ -1,5 +1,10 @@
+{%- comment -%}
 {{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
 {{ 'component-slider.css' | asset_url | stylesheet_tag }}
+
+<link rel="preload" href="{{ 'component-slideshow.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="{{ 'component-slider.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+{%- endcomment -%}
 
 {%- liquid
   assign social_icons = true
@@ -21,7 +26,26 @@
 <div
   class="utility-bar color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator and section.blocks.size > 0 %} utility-bar--bottom-border{% elsif section.settings.show_line_separator and section.settings.show_social and social_icons%} utility-bar--bottom-border-social-only{% endif %}{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header-localization{% endif %}"
 >
+  {%- for block in section.blocks -%}
+    {%- if block.type != 'timer_discount ' -%}
+      <div
+        class="announcement-bar"
+        role="region"
+        aria-label="{{ 'sections.header.announcement' | t }}"
+        {{ section.blocks.first.shopify_attributes }}
+      >
+        <div class="sale-banner text-center" data-banner-discount-code="{{block.settings.timer_discount_code}}">
+          <a href="{{ block.settings.timer_discount_link }}?redirect={{ request.path }}" class="discountLink timerDiscount" data-msg="{{ block.settings.timer_discount_confirm }}" title="{{ block.setting.timer_discount_title }}" style="background-color: {{block.settings.timer_discount_bg}}; color: {{block.settings.timer_discount_color}}">
+            {{ block.settings.timer_discount_html }}
+          </a>  
+        </div>  
+      </div>
+    {%- endif -%}  
+  {%- endfor -%}
+
   <div class="page-width utility-bar__grid{% if announcement_bar and language_country_selector or section.settings.show_social and social_icons %} utility-bar__grid--3-col{% elsif language_country_selector or section.settings.show_social and social_icons %} utility-bar__grid--2-col{% endif %}">
+    
+
     {%- if section.settings.show_social and social_icons -%}
       {%- render 'social-icons' -%}
     {%- endif -%}
@@ -161,7 +185,155 @@
     </div>
   </div>
 </div>
+{%- for block in section.blocks -%}
+  {%- if block.type != 'timer_discount ' -%}
+    <script type="text/javascript">
+let timerInterval = null;
 
+function getLastWindowEnd(mtNow, allowedTimes) {
+  let lastEnd = null;
+
+  allowedTimes.forEach(range => {
+    const start = new Date(mtNow);
+    start.setHours(range.startHour, range.startMinute, 0, 0);
+
+    const end = new Date(mtNow);
+    end.setHours(range.endHour, range.endMinute, 0, 0);
+
+    // Overnight window
+    if (end <= start) end.setDate(end.getDate() + 1);
+
+    if (!lastEnd || end > lastEnd) {
+      lastEnd = end;
+    }
+  });
+
+  return lastEnd;
+}
+
+function runOnlyInMountainTime() {
+  /* -----------------------------
+     CONFIG
+  ------------------------------ */
+  const allowedTimes = [
+    { startHour: {{block.settings.timer_discount_hour_sh1}}, startMinute: {{block.settings.timer_discount_hour_sm1}}, endHour: {{block.settings.timer_discount_hour_eh1}}, endMinute: {{block.settings.timer_discount_hour_em1}} }, 
+    {%- unless block.settings.timer_discount_hour_sh2 ==  0 and block.settings.timer_discount_hour_eh2 == 0-%}
+    { startHour: {{block.settings.timer_discount_hour_sh2}}, startMinute: {{block.settings.timer_discount_hour_sm2}}, endHour: {{block.settings.timer_discount_hour_eh2}}, endMinute: {{block.settings.timer_discount_hour_em2}} }  
+    {%- endunless -%}
+  ];
+
+  const loopFlag = false; // 🔁 true = loop to tomorrow
+
+  /* -----------------------------
+     MOUNTAIN TIME
+  ------------------------------ */
+  const now = new Date();
+  const mtString = now.toLocaleString("en-US", {
+    timeZone: "America/Denver",
+    //timeZone: "Asia/Manila",
+    hour12: false
+  });
+  const mtNow = new Date(mtString);
+
+  const el = document.querySelector(".timerDiscount .timerBox");
+  if (!el) return;
+
+  /* -----------------------------
+     HARD STOP AT LAST END
+  ------------------------------ */
+  const lastWindowEnd = getLastWindowEnd(mtNow, allowedTimes);
+
+  if (!loopFlag && mtNow >= lastWindowEnd) {
+    el.textContent = "00h:00m:00s";
+
+    document.querySelectorAll(".sale-banner").forEach(el => {
+      el.setAttribute("data-timer", "false");
+    });
+
+    theme.custom.customDiscountEnded = true;
+
+    if (timerInterval) {
+      clearInterval(timerInterval); // ⛔ FULL STOP
+      timerInterval = null;
+    }
+    return;
+  }
+
+  let inRange = null;
+
+  /* -----------------------------
+     FIND ACTIVE WINDOW
+  ------------------------------ */
+  for (const range of allowedTimes) {
+    const start = new Date(mtNow);
+    start.setHours(range.startHour, range.startMinute, 0, 0);
+
+    const end = new Date(mtNow);
+    end.setHours(range.endHour, range.endMinute, 0, 0);
+
+    // Overnight window
+    if (end <= start) end.setDate(end.getDate() + 1);
+
+    if (mtNow >= start && mtNow < end) {
+      inRange = { start, end };
+      break;
+    }
+  }
+
+  /* -----------------------------
+     OUTSIDE WINDOW (BUT NOT FINAL END)
+  ------------------------------ */
+  if (!inRange) {
+    el.textContent = "00h:00m:00s";
+    document.querySelectorAll(".sale-banner").forEach(el => {
+      el.setAttribute("data-timer", "false");
+    });
+    return;
+  }
+
+  /* -----------------------------
+     ACTIVE COUNTDOWN
+  ------------------------------ */
+  const diff = inRange.end - mtNow;
+
+  if (diff <= 0) {
+    el.textContent = "00h:00m:00s";
+    document.querySelectorAll(".sale-banner").forEach(el => {
+      el.setAttribute("data-timer", "false");
+    });
+    return;
+  }
+
+  el.textContent = formatCountdown(diff);
+  document.querySelectorAll(".sale-banner").forEach(el => {
+    el.setAttribute("data-timer", "true");
+  });
+}
+
+/* -----------------------------
+   FORMAT
+------------------------------ */
+function formatCountdown(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+  const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const s = String(totalSeconds % 60).padStart(2, "0");
+  return `${h}h:${m}m:${s}s`;
+}
+
+/* -----------------------------
+   START
+------------------------------ */
+if (!timerInterval) {
+  timerInterval = setInterval(runOnlyInMountainTime, 1000);
+}
+runOnlyInMountainTime();
+
+
+
+    </script>
+  {%- endif -%}  
+{%- endfor -%}
 {% schema %}
 {
   "name": "t:sections.announcement-bar.name",
@@ -245,6 +417,142 @@
           "id": "link",
           "label": "t:sections.announcement-bar.blocks.announcement.settings.link.label"
         }
+      ]
+    },
+    {
+      "type": "timer_discount",
+      "name": "Timer Discount",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "timer_discount_loop",
+          "label": "Timer Discount Loop",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "timer_discount_code",
+          "label": "Timer Discount Code",
+          "default": "OOFLASH40"
+        },
+        {
+          "type": "textarea",
+          "id": "timer_discount_html",
+          "label": "Timer Discount",
+          "default": " FLASH SALE – ⏳ Ends in <span class=\"timerBox\">0h 0m 0s</span>! <b>35% OFF + FREE Shipping</b>. Use code <u>FLASHSALE35</u>",
+          "info": "If blank timer discount will be disabled"
+        },
+        {
+          "type": "textarea",
+          "id": "timer_discount_title",
+          "label": "Timer Discount Title",
+          "default": "35% OFF + Free Shipping Use Code: FLASHSALE35"
+        },
+        {
+          "type": "url",
+          "id": "timer_discount_link",
+          "label": "Timer Discount Discount Code Link",
+          "info": "Leave blank to disable link"
+        },
+        {
+          "type": "textarea",
+          "id": "timer_discount_confirm", 
+          "label": "Timer Discount Popup Message",
+          "default": "Discount Code FLASHSALE35 will be added when you checkout",
+          "info": "This is the discount code popup message"
+        },
+        {
+          "type": "header",
+          "content": "Timer 1"
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_sh1",
+          "label": "Start Hour 1",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_sm1",
+          "label": "Start Minute 1",
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_eh1",
+          "label": "End Hour 1",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 15
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_em1",
+          "label": "End Minute 1",
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "Timer 2"
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_sh2",
+          "label": "Start Hour 2",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 17
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_sm2",
+          "label": "Start Minute 2",
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_eh2",
+          "label": "End Hour 2",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 18
+        },
+        {
+          "type": "range",
+          "id": "timer_discount_hour_em2",
+          "label": "End Minute 2",
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "color",
+          "id": "timer_discount_bg",
+          "label": "Background color",
+          "default": "#003777"
+        },
+        {
+          "type": "color",
+          "id": "timer_discount_color",
+          "label": "Color",
+          "default": "#ffffff"
+        }  
       ]
     }
   ],

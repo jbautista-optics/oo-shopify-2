@@ -57,11 +57,11 @@
             elsif section.blocks.size > 6
               assign footer_grid_class = 'grid--4-col-desktop'
             elsif section.blocks.size > 4
-              assign footer_grid_class = 'grid--3-col-tablet'
+              assign footer_grid_class = 'grid--5-col-tablet'
             endif
           -%}
           <div
-            class="footer__blocks-wrapper grid grid--1-col grid--2-col grid--4-col-tablet {{ footer_grid_class }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            class="footer__blocks-wrapper grid grid--1-col grid--2-col grid--5-col-tablet {{ footer_grid_class }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
             {% if settings.animations_reveal_on_scroll %}
               data-cascade
             {% endif %}
@@ -153,6 +153,44 @@
                         {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
                       {%- endif -%}
                     </div>
+                {%- when 'contact-text' -%}
+               
+                    <div class="site-footer__section text-center footer-help"> 
+                      <h2 class="footer-block__heading">{{ block.settings.title | escape }}</h2>
+                      <div class="rte-setting">{{ block.settings.text }}</div>
+                      <div class="row justify-content-md-center justify-content-center align-items-end">
+                        {%- if block.settings.link_call != '' -%}
+                        <div class="footer-icon">
+                          <a href="{{block.settings.link_call}}" target="_blank" aria-label="Call {{shop.name}}">
+                          <img src="{{ 'call.svg' | asset_url }}" width="40" height="55" alt="Call {{shop.name}}">   
+                          </a>
+                        </div>
+                        {%- endif -%}
+                        {%- if block.settings.link_faq != '' -%}
+                        <div class="footer-icon">
+                          <a href="{{block.settings.link_faq}}" aria-label="{{shop.name}} FAQ">
+                          <img src="{{ 'faq.svg' | asset_url }}" width="40" height="55" alt="{{shop.name}} FAQ">   
+                          </a>
+                        </div>
+                        {%- endif -%}
+                        {%- if block.settings.link_email != '' -%}
+                        <div class="footer-icon">
+                          <a href="{{block.settings.link_email}}" target="_blank" aria-label="Email {{shop.name}}">
+                          <img src="{{ 'email.svg' | asset_url }}" width="40" height="55" alt="Email {{shop.name}}">   
+                          </a>
+                        </div>
+                        {%- endif -%}
+                        {%- if block.settings.link_chat != '' -%}
+                        <div class="footer-icon">
+                          <!-- To do: Make chat open chat window -->
+                          <a href="{{block.settings.link_chat}}" aria-label="Chat {{shop.name}}"> 
+                          <img src="{{ 'chat.svg' | asset_url }}" width="40" height="55" alt="Chat {{shop.name}}">   
+                          </a>
+                        </div>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                 
                 {%- endcase -%}
               </div>
             {%- endfor -%}
@@ -242,9 +280,7 @@
             </div>
           {%- endif -%}
 
-          {%- if section.settings.show_social and has_social_icons -%}
-            {%- render 'social-icons', class: 'footer__list-social' -%}
-          {%- endif -%}
+          
         </div>
       </div>
     {%- endunless -%}
@@ -283,6 +319,7 @@
         {%- endif -%}
       </div>
       <div class="footer__column footer__column--info">
+
         {%- if section.settings.payment_enable -%}
           <div class="footer__payment">
             <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
@@ -302,20 +339,25 @@
         <small class="copyright__content"
           >&copy; {{ 'now' | date: '%Y' }}, {{ shop.name | link_to: routes.root_url -}}
         </small>
+        {%- comment -%}
         <small class="copyright__content">{{ powered_by_link }}</small>
+        {%- endcomment -%}
         {%- if section.settings.show_policy -%}
-          <ul class="policies list-unstyled">
-            {%- for policy in shop.policies -%}
-              {%- if policy != blank -%}
-                <li>
-                  <small class="copyright__content"
-                    ><a href="{{ policy.url }}">{{ policy.title | escape }}</a></small
-                  >
-                </li>
-              {%- endif -%}
-            {%- endfor -%}
-          </ul>
+        <ul class="policies list-unstyled">
+          {%- for policy in shop.policies -%}
+            {%- if policy != blank -%}
+              <li>
+                <small class="copyright__content"
+                  ><a href="{{ policy.url }}">{{ policy.title | escape }}</a></small
+                >
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
         {%- endif -%}
+        {%- if section.settings.show_social and has_social_icons -%}
+            {%- render 'social-icons', class: 'footer__list-social' -%}
+          {%- endif -%}
       </div>
     </div>
   </div>
@@ -420,6 +462,47 @@
           ],
           "default": "center"
         }
+      ]
+    },
+    {
+      "type": "contact-text",
+      "name": "Contact Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Share store details, promotions, or brand content with your customers</p>"
+        },
+        {
+          "type": "text",
+          "id": "link_call",
+          "label": "Call Link",
+          "default": "tel:8554652703"
+        },
+        {
+          "type": "text",
+          "id": "link_faq",
+          "label": "FAQs Link",
+          "default": "/pages/home-try-on-how-it-works"
+        },
+        {
+          "type": "text",
+          "id": "link_email",
+          "label": "Email Link",
+          "default": "mailto:info@opticsoutfitter.com"
+        },  
+        {
+          "type": "text",
+          "id": "link_chat",
+          "label": "Chat Link",
+          "default": "openChatWindow()"
+        } 
       ]
     }
   ],

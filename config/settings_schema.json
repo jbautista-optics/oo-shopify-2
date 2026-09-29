@@ -1466,5 +1466,277 @@
         "label": "t:settings_schema.customer_accounts.settings.customer_account_menu.label"
       }
     ]
+  },
+  {
+    "name": "Home Try-On",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "hto_enabled",
+        "label": "Enabled?"
+      },
+      {
+        "type": "product",
+        "id": "hto_product",
+        "label": "Product"
+      },
+      {
+        "type": "text",
+        "id": "hto_phone",
+        "label": "Phone"
+      },
+      {
+        "type": "textarea",
+        "id": "hto_agree",
+        "label": "Checkout Terms"
+      },
+      {
+        "type": "text",
+        "id": "disable_hto_tag",
+        "label": "Disable HTO Product Tag",
+        "default": "No-HTO" 
+      },
+      {
+        "type": "page",  
+        "id": "hto-page",
+        "label": "HTO Modal Content"
+      },
+      {
+        "type": "text",
+        "id": "htoSingleProduct",
+        "label": "HTO Single Product",
+        "default": "Recoil",
+        "info": "Comma-separated list of product title that will occupy all HTO slots" 
+      },
+      {
+        "type": "textarea",
+        "id": "htoClearHTOTitle",
+        "label": "HTO Single Modal Title",
+        "default": "This item occupies 4 hto slots for Home-TryOn"
+      },
+      {
+        "type": "textarea",
+        "id": "htoClearHTOMsg",
+        "label": "HTO Single Modal Description",
+        "default": "Adding this item will replace all your Home-TryOn with this item."
+      },
+       {
+        "type": "checkbox",
+        "id": "hto_tip_enabled",
+        "label": "Enable PDP HTO button tooltip", 
+        "default": false
+      },
+      {
+        "type": "richtext",
+        "id": "htoAddedTip",
+        "label": "HTO Added Tooltip",
+        "default": "<p><strong>[htoCounter]</strong><br>This frame is in your Home Try-On.</p>"
+      },
+      {
+        "type": "richtext",
+        "id": "htoFullTip",
+        "label": "HTO Added Tooltip",
+        "default": "<p><strong>Your Home Try-On is full</strong><br>To add this frame to your Home Try-On, you’ll have to remove another frame from your cart.</p>"
+      },
+      {
+        "type": "header",
+        "content": "HTO Out of Stock Modal"
+      },
+      {
+        "type": "text",
+        "id": "hto_oos_title",
+        "label": "HTO OOS Modal Title",
+        "default": "Home Try-On Notice"
+      }, 
+      {
+        "type": "textarea",
+        "id": "hto_oos_description",
+        "label": "HTO OOS Modal Description",
+        "default": "It seems one of the items is no longer in stock."
+      }
+    ]
+  },
+  {
+    "name": "Collection page",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "sizesMapping",
+        "label": "Size Handle Mapping"
+      }
+    ]
+  },
+  {
+    "name": "On/Off Hours and SMS Settings",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Exit Intent"
+      },
+      {
+        "type": "checkbox",
+        "id": "smsExit",
+        "label": "Enable SMS Exit", 
+      },
+      {
+        "type": "number",
+        "id": "smsBuffer",
+        "label": "SMS Days Buffer", 
+        "default": 30
+      },
+      {
+        "type": "number",
+        "id": "smsPV",
+        "label": "Page View Buffer", 
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "exitDelay",
+        "label": "Exit Popup Delay",
+        "min": 0,
+        "max": 60,
+        "step": 1,
+        "default": 7
+      },
+      {
+        "type": "header",
+        "content": "Klaviyo and SMS Settings"
+      },
+      {
+        "type": "text",
+        "id": "onlineKLSMS",
+        "label": "Online KLaviyo Form ID"
+      },
+      {
+        "type": "text",
+        "id": "offlineKLSMS",
+        "label": "Offline KLaviyo Form ID"
+      },
+      {
+        "type": "textarea",
+        "id": "onlineSMS",
+        "label": "Online Message"
+      },
+      {
+        "type": "textarea",
+        "id": "offlineSMS",
+        "label": "Offline SMS Message"
+      },    
+      {
+        "type": "header",
+        "content": "Hour Settings"
+      },  
+      {
+        "type": "text",
+        "id": "hours_on",
+        "label": "On Hours",
+        "default": "9 AM"
+      },
+      {
+        "type": "text",
+        "id": "hours_off",
+        "label": "Off Hours", 
+        "default": "9 PM"
+      }, 
+      {
+        "type": "header",
+        "content": "Floating Chat and SMS Settings"
+      },
+      {
+        "type": "text",
+        "id": "onlineKLSMSChat",
+        "label": "Online KLaviyo Form ID"
+      },
+      {
+        "type": "text",
+        "id": "offlineKLSMSChat",
+        "label": "Offline KLaviyo Form ID"
+      },
+      {
+        "type": "textarea",
+        "id": "onlineSMSChat",
+        "label": "Online Chat Message"
+      },
+      {
+        "type": "textarea",
+        "id": "offlineSMSChat",
+        "label": "Offline Chat SMS Message"
+      } 
+    ]
+  },
+  {
+    "name": "Discount Settings",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "autoDiscount",
+        "label": "Enable Auto Discount",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "autoDiscountPercentage",
+        "label": "Auto Discount Percentage",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "default": 20
+      },
+      {
+        "type": "text",
+        "id": "autoDiscountTag",
+        "label": "Auto Discount Product Tag",
+        "default": "Auto_Prescription_Discount"
+      },
+      {
+        "type": "html",
+        "id": "autoDiscountMsgPDP",
+        "label": "Auto Discount Message",
+        "default": "20% Off on Prescription Glasses"
+      },
+      {
+        "type": "checkbox",
+        "id": "customDiscountToggle", 
+        "label": "Enable Custom Discount Badge",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "customDiscountCode",
+        "label": "Custom Discount Code",
+        "default": "OOFLASH40"
+      },
+      {
+        "type": "text",
+        "id": "customDiscountCodeApplied",
+        "label": "Custom Discount Applied Message",
+        "default": "OOFLASH40 discount code applied | 40% OFF COMPLETE PRESCRIPTION GLASSES + FREE SHIPPING"
+      },
+      {
+        "type": "range",
+        "id": "customDiscountPercentage",
+        "label": "Custom Discount Percentage",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "default": 40
+      },
+      {
+        "type": "text",
+        "id": "customDiscountProdTypes",
+        "label": "Product Types for Custom Discount",
+        "default": "Frame, Goggle"
+      },
+      {
+        "type": "html",
+        "id": "customDiscountAppliedMsgPDP",
+        "label": "Custom Discount Message",
+        "default": "40% Off on Prescription Glasses"
+      }
+    ]
   }
+
 ]

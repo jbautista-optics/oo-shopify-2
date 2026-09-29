@@ -1,0 +1,112 @@
+{%- comment -%} COLLECTION HEADER {%- endcomment -%}
+
+{% assign hasImage = false %}
+{% assign desktopBanner = '' %}
+{% assign mobileBanner = '' %}
+{% if collection.image  %}
+  {% assign hasImage = true %}
+  {% assign desktopBanner = collection.image %}
+  {% assign mobileBanner = collection.image %}       
+{% endif %}
+{%- if collection.metafields.custom.banner -%}
+  {% assign hasImage = true %}       
+  {% assign desktopBanner = collection.metafields.custom.banner %}
+  {% assign mobileBanner = collection.metafields.custom.banner %}     
+{%- endif -%}
+{%- if collection.metafields.custom.mobile_banner -%}
+  {% assign mobileBanner = collection.metafields.custom.mobile_banner %}
+{%- endif -%}
+
+{% if hasImage  %}
+  {% assign ban_image = collection.image | img_url:'1905x' %}
+  {% assign ban_image_mobile = collection.image | img_url:'750x' %}
+  {% if collection.metafields.custom_fields["mobile_banner_image"] != blank %}
+    {% assign imgx = collection.metafields.custom_fields.mobile_banner_image | first %} 
+    {% assign ban_image_mobile = imgx.cloudinary_src %}
+  {% endif %}
+  {% for image in product.metafields.accentuate.multi_images %}
+    <img src="{{ image.src }}" alt="{{ image.alt }}"/>
+  {% endfor %}
+  {% assign cfs = collection.metafields.custom_fields %}
+  {% assign cfs_banner_title = collection.metafields.custom_fields.banner_title | string  %}
+  {% assign cfs_banner_description = cfs["banner_description"] | size %}
+  <div id="header-banner" class="text-center {% if cfs["banner_description"] == blank %} imageOnlyBanner{% endif %}">
+    <picture>
+      <source media="(max-width: 415px)" srcset="{{ mobileBanner | img_url: '415x' }}">
+      <source media="(max-width: 750px)" srcset="{{ mobileBanner | img_url: '750x' }}">
+      <source media="(max-width: 1366px)" srcset="{{ desktopBanner | img_url: '1366x' }}">
+      <img src="{{ desktopBanner | img_url: '1920x' }}" alt="{{ cfs["banner_title"] }}" fetchpriority="high" width="1920" height="480">
+    </picture> 
+    <div class="mobileBreadcrumbs">
+      {% include 'breadcrumbs' %}
+    </div>  
+    <div id="banner-text-container">
+      {% if cfs["banner_title"] != blank %}
+        <h1 class="category">{{ cfs["banner_title"] }}</h1>
+      {% else %}  
+        <h1 class="visually-hidden">{{collection.title}}</h1>  
+      {% endif %}
+      <div class="description-content">
+        {% if cfs["banner_description"] != blank %}
+          {% assign banner_description = cfs["banner_description"] %}
+          {% assign collection_handle = collection.handle %}
+          {% assign banner_description = banner_description | replace: 'Shop ' , 'Shop <b>' %}
+          {% assign banner_description = banner_description | replace: ' below' , '</b> below' %}
+          {% assign banner_cta_flag = false %}
+          
+          {% for collectionList in section.settings.collection_cta %}
+            {% assign collection_item_handle = collectionList.handle %}
+            {% if collection_item_handle == collection_handle %}
+              {% assign banner_cta_flag = true %}
+            {% endif %}  
+          {% endfor %}
+
+          <h2 class="description">{{ banner_description }}</h2>
+          {% if banner_cta_flag  %}
+            {% if section.settings.header_cta != blank %}
+              <div class="take-a-quiz">
+                  {{section.settings.header_cta}}
+              </div> 
+            {% endif %}
+          {% else %}     
+            {% if collection.metafields.custom_fields.banner_link_title and collection.metafields.custom_fields.banner_link_url%}  
+              {% assign collectionLink = collection.metafields.custom_fields.banner_link_url %}
+              {%- if collectionLink contains '()' -%}
+                <div class="take-a-quiz new">
+                  <p>
+                    <a href="/pages/home-try-on-glasses" onclick="{{collectionLink}}; return false;"><i></i> Smart Fit Finder (<30s)</a>
+                  </p>
+                </div>        
+              {%- else -%}
+                <div class="take-a-quiz">
+                  <p><a href="{{collectionLink}}">{{ collection.metafields.custom_fields.banner_link_title }}</a></p>
+                </div>      
+              {%- endif -%}
+            {% endif %}      
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="page-width">
+    <p>&nbsp;</p>
+    <h1>{{collection.title}}</h1>  
+  </div>  
+{% endif %}
+{%- comment -%} END COLLECTION HEADER {%- endcomment -%}
+
+{% schema %}
+{
+  "name": "Collection Banner",
+  "settings": [
+      
+  ],
+  "presets": [
+    {
+      "name": "Collection Banner",
+      "category": "Banner"
+    }
+  ]    
+}
+{% endschema %}

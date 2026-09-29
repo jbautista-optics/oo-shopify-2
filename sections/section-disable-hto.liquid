@@ -1,0 +1,60 @@
+<div class="disableHTOBox">
+  <script type="text/javascript">
+  var disableHto = [
+  {%- for block in section.blocks -%}
+    { 'handle': '{{ block.settings.handle }}', 'Color': '{{ block.settings.color }}', 'Size': '{{ block.settings.size }}', 'width': '{{ block.settings.width }}' }{%- unless forloop.last -%}, {%- endunless -%}
+  {%- endfor -%}   
+  ]
+  </script>
+</div>
+{% schema %}
+  {
+    "name": "Disable HTO",  
+    "class": "shopify-section hide",
+    "max_blocks": 30,
+    "settings": [
+    ],
+    "blocks": [
+      {
+        "type": "disable-hto",
+        "name": "Disable HTO Entry",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title", 
+            "info": "[Product Title - Color - Size, Size]. Used Internally"
+          }, 
+          {
+            "id": "handle",
+            "type": "text",
+            "label": "Product Handle"
+          }, 
+          {
+            "id": "color",
+            "type": "textarea",
+            "label": "Product Color"
+          }, 
+          {
+            "id": "size",
+            "type": "textarea",
+            "label": "Product Size",
+            "info": "Comma-seperated list of product size. Leave blank for product with no size" 
+          }, 
+          {
+            "id": "width",
+            "type": "textarea",
+            "label": "Product Width",
+            "info": "This will be used by product grid. Comma-seperated list of product width. Leave blank for product with no size"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Disable HTO Entry", 
+        "category": "custom"
+      }
+    ]
+  }
+{% endschema %}

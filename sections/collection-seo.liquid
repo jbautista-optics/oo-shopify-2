@@ -1,0 +1,37 @@
+<div class="page-width collection-seo">
+{% if collection.description != '' %}
+  {% assign seoDescription = collection.description | split:"<!-- split -->"%}
+  <div class="seoDescription rtext">
+    <div class="first">
+    {{ seoDescription | first }}
+    </div>
+    <div class="last">
+    {{ seoDescription | last }}
+    </div>
+    {% if collection.description contains "<!-- split -->" %}
+    <div class="expCollapse">
+      <span class="more expColl">...Read more</span>
+      <span class="less expColl">Read less</span>
+    </div>               
+    {% endif %}
+    {%- if collection.metafields.custom.additional_seo_text != '' -%}
+      <hr>
+      {{collection.metafields.custom.additional_seo_text}}           
+    {%- endif -%}
+  </div>
+{% endif %}
+</div>
+{% schema %}
+{
+  "name": "Collection SEO",
+  "settings": [
+      
+  ],
+  "presets": [
+    {
+      "name": "Collection SEO",
+      "category": "Text"
+    }
+  ]    
+}
+{% endschema %}

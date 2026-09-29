@@ -1,0 +1,74 @@
+{%- assign imgSizes = img-sizes | split: ', ' -%}
+{%- assign imgSrc = src -%}
+{%- assign xSources = '' -%}
+
+{%- for imgSize in imgSizes -%}
+  {%- assign imgSizeArr = imgSize | split: ':' -%}
+  {%- assign mediaQuery = '' -%}
+  {%- assign imgSizeX = '' -%}
+  {%- assign imgSizeW = '' -%}
+
+  {%- if imgSizeArr[1] -%}
+    {%- assign mediaQuery = '(min-width: ' | append: imgSizeArr[0] | append: 'px)' -%}
+    {%- assign imgSizeX = imgSizeArr[1] | append: 'x' -%}
+    {%- assign imgSizeW = imgSizeArr[1] | append: 'w' -%}
+  {%- else -%}
+    {%- assign imgSizeX = imgSizeArr[0] | append: 'x' -%}
+    {%- assign imgSizeW = imgSizeArr[0] | append: 'w' -%}
+  {%- endif -%}
+
+  {%- if imgSrc contains 'files/' or imgSrc contains 'products/' -%}
+    {%- assign image_url = imgSrc | img_url: imgSizeX -%}
+    {%- if imgSrc contains '.avif' -%}
+      {%- assign masterImg = imgSrc  | img_url: 'master' -%}  
+      {%- capture extImage -%}_{{imgSizeX}}.avif{%- endcapture -%}
+      {%- assign image_url = masterImg  | replace: '.avif', extImage-%}
+    {%- endif -%}
+  {%- else -%}
+    {%- assign image_url = imgSrc | file_img_url: imgSizeX -%}
+  {%- endif -%}
+
+  {%- if imgSizeArr[1] -%}
+    {%- capture xSources -%}
+      {{ xSources }}
+      <source media="{{ mediaQuery }}" srcset="{{ image_url }}" type="image/{{ imgSrc | split: '.' | last }}">
+    {%- endcapture -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign fallbackSize = imgSizes.last | split: ':' | last -%}
+{%- if fallbackSize == blank %}
+  {%- assign fallbackSize = imgSizes.last | split: ':' | first -%}
+{%- endif -%}
+{%- assign fallbackX = fallbackSize | append: 'x' -%}
+{%- if imgSrc contains 'files/' or imgSrc contains 'products/' -%}
+  {%- assign fallbackSrc = imgSrc | img_url: fallbackX -%}
+  {%- if imgSrc contains '.avif' -%}
+    {%- assign masterImg = imgSrc  | img_url: 'master' -%}  
+    {%- capture extImage -%}_{{fallbackX}}.avif{%- endcapture -%}
+    {%- assign fallbackSrc = masterImg  | replace: '.avif', extImage-%}
+  {%- endif -%}
+{%- else -%}
+  {%- assign fallbackSrc = imgSrc | file_img_url: fallbackX -%}
+{%- endif -%}
+
+<picture>
+  {{ xSources | strip_newlines }}
+  <img
+    loading="{{ loading }}"
+    {% if class != blank %}class="{{ class }}"{% endif %}
+    src="{{ fallbackSrc }}"
+    data-type="{{ imgSrc | split: '.' | last }}"
+    alt="{{ alt }}"
+    {% if imgSrc contains 'files/' %}
+      height="{{ imgSrc.height }}"
+      width="{{ imgSrc.width }}"
+    {% else %}
+      height="{{ height }}"
+      width="{{ width }}"
+    {% endif %}
+    {% if style %}style="{{ style }}"{% endif %}
+    {% if data-src %}data-src="{{ data-src }}"{% endif %}
+    {% if fetchpriority %}fetchpriority="high"{% endif %}
+  >
+</picture>

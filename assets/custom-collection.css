@@ -39,7 +39,8 @@
 #banner-text-container .take-a-quiz a {
   font-size:17px;
   color:#fff;
-  font-weight:600
+  font-weight:600;
+  text-decoration: none;
 }
 #banner-text-container h2.description b,
 #banner-text-container .description.h2 b {
@@ -313,9 +314,7 @@ body #header-banner picture {
     background:#fff;
     outline:solid #ccc 1px
   }
-  .customCard .htoSizeSelection .htoSize {
-    column-count:1
-  }
+ 
   .productGrid .customCard .product-card .boost-pfs-filter-product-item-label {
     padding:0!important
   }
@@ -457,6 +456,11 @@ body #header-banner picture {
   margin-top:0;
   margin-bottom:0
 }
+.boost-sd__product-swatch-option[data-available="false"]  {
+display: none !important;
+}
+
+
 body .boost-sd-right {
   width:80%;
   padding:0 0 0 30px;
@@ -515,26 +519,28 @@ body .boost-sd__filter-option-item-label {
   font-weight:700
 }
 .boost-sd__filter-tree-vertical-content #pf_t_sizes .boost-sd__filter-option-item-button:before {
-  border-radius: 50%;
+  border-radius: 0%;
 }
 .boost-sd__filter-tree-vertical-content #pf_t_sizes .boost-sd__filter-option-item-button.boost-sd__filter-option-item-button--selected:before {
   border:1px solid rgba(0,0,0,1);
-  border-radius: 50%;
+  border-radius: 0%;
 }
 .boost-sd__filter-tree-vertical-content .boost-sd__filter-option-item-button--with-checkbox:after {
   top:8px;
   left:3px
 }
 .boost-sd__filter-tree-vertical-content #pf_t_sizes .boost-sd__filter-option-item-button.boost-sd__filter-option-item-button--selected:after {
-  content: "";
-  display:block;
-  width:7px;
-  height:7px;
-  border-radius: 50%;
-  background: #000;
+  content:"";
+  border:2px solid #000;
+  background:0 0;
+  border-top:none;
+  border-right:none;
+  width:9px;
+  height:6px;
+  position:absolute;
   top:8px;
-  left:4px;
-  position:absolute
+  left:3px;
+  transform:rotate(-50deg);
 }
 body .boost-sd__refine-by-vertical-refine-by-heading {
   font-size:20px;
@@ -725,6 +731,96 @@ body .boost-sd__sorting-button {
   white-space: nowrap;
   font-size: 14px !important;
 }
+.gridMarketing a {
+  color: #333;
+  text-decoration: none;
+}
+.gridMarketing.customCard .marketingBox {
+  position:relative;
+  display:block;
+  position:absolute;
+  top:8px;
+  left:8px;
+  right:8px;
+  bottom:8px;
+  z-index:3
+}
+.gridMarketing.customCard img {
+  position:absolute;
+  top:50%;
+  left:50%;
+  z-index:1;
+  transform:translate(-50%,-50%);
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:50% 100%;
+  display:block
+}
+.gridMarketing.customCard .marketingCont {
+  position:absolute;
+  left:15px;
+  bottom:15px;
+  z-index:2;
+  color:#fff;
+  right:15px
+}
+.gridMarketing.customCard .marketingCont h6 {
+  line-height: 1.25;
+  font-size:26px;
+  margin-bottom:15px;
+  color:#fff;
+}
+.gridMarketing.customCard .marketingCont p {
+  font-size:14px;
+  margin-bottom:0;
+  margin-top:7px;
+  line-height: 1.25;
+}
+.gridMarketing.customCard .marketingCont small {
+  font-size:10px;
+  line-height:1;
+  display:block;
+  color:#999
+}
+.gridMarketing.customCard .marketingCont .btn {
+  border-radius:8px;
+  background-color:#c62a32;
+  color:#fff;
+  border:solid 0px;
+  width:100%;
+  font-size:14px;
+  white-space:normal;
+  min-width:1px;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  display:block;
+  overflow:hidden;
+  max-width:100%;
+  padding:0 10px
+}
+.gridMarketing.customCard .marketingCont .btn:hover {
+  background:#fff;
+  color:#000
+}
+@media only screen and (max-width:639px) {
+  .gridMarketing.customCard {
+    aspect-ratio:1/1.25
+  }
+}
+@media only screen and (min-width:992px)and (max-width:1099px) {
+  .gridMarketing.customCard .marketingCont h6 {
+    font-size:23px
+  }
+  .gridMarketing.customCard .marketingCont .btn {
+    font-size:.9em
+  }
+  .gridMarketing.customCard .marketingCont p {
+    font-size:14px
+  }
+}
+
+
 @media only screen and (max-width:639px) {
   .gridMarketing.customCard {
     aspect-ratio:1/1.25
@@ -1032,6 +1128,13 @@ position: relative;
   position: relative;
   z-index: 1000; 
 }
+
+.page-width.scroll-trigger.animate--slide-in {
+transform: none !important;
+animation: none !important;
+opacity: 1 !important;
+}
+
 @media only screen and (max-width:991px) { 
   body.template-search .boost-sd-right .productGrid .customCard {
   width: 50%;
@@ -1060,25 +1163,3 @@ position: relative;
   }
 }  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* @import url('modules/custom-pfs.css'); */

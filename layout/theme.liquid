@@ -31,7 +31,7 @@
 
     {{ 'jquery-3.3.1.min.js' | asset_url | script_tag }}
     {{ 'api.jquery.js' | shopify_asset_url | script_tag }} 
-     {{ 'custom-head.js' | asset_url | script_tag }}
+    {{ 'custom-head.js' | asset_url | script_tag }}
 
     <script type="module">
       import * as StandardEvents from 'https://cdn.shopify.com/storefront/standard-events.js';
@@ -53,6 +53,156 @@
         );
       }, { once: true });
     </script>
+    <script>
+  document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    window.theme = window.theme || {};
+    var customerEmail = "{{ customer.email }}"; 
+    theme.breakpoints = {
+      medium: 750,
+      large: 990,
+      widescreen: 1400
+    };
+    theme.strings = {
+      stockAvailable: {{ 'products.product.stock_available' | t: count: '1' | json }},
+      addToCart: {{ 'products.product.add_to_cart' | t | json }},
+      addingToCart: {{ 'products.product.adding_to_cart' | t | json }},
+      soldOut: {{ 'products.product.sold_out' | t | json }},
+      unavailable: {{ 'products.product.unavailable' | t | json }},
+      noStockAvailable: {{ 'products.product.stock_unavailable' | t | json }},
+      willNotShipUntil: {{ 'products.product.will_not_ship_until' | t: date: '[date]' | json }},
+      willBeInStockAfter: {{ 'products.product.will_be_in_stock_after' | t: date: '[date]' | json }},
+      totalCartDiscount: {{ 'cart.general.savings_html' | t: price: '[savings]' | json }},
+      addressError: {{ 'sections.map.address_error' | t | json }},
+      addressNoResults: {{ 'sections.map.address_no_results' | t | json }},
+      addressQueryLimit: {{ 'sections.map.address_query_limit_html' | t | json }},
+      authError: {{ 'sections.map.auth_error_html' | t | json }}
+    };
+    window.lazySizesConfig = window.lazySizesConfig || {};
+    window.lazySizesConfig.loadHidden = false;
+    {%- assign htoFound = false -%}
+    {%- assign htoProd = all_products[settings.hto_product] -%}
+    {%- assign htoID = htoProd.first_available_variant.id -%}
+    {%- assign htoQty = 0 -%}
+    {%- for item in cart.items -%}
+      {%- if item.id == htoID -%}
+         {%- assign htoFound = true -%}
+         {%- assign htoQty = item.quantity -%}
+      {%- endif -%}
+    {%- endfor -%}
+    theme.custom = {
+        htoProduct: {{htoID | json}},
+        htoProductQty: {{htoQty | json}},
+        hto_add: {{ 'products.product.hto_add' | t | json }}, 
+        hto_added: {{ 'products.product.hto_added' | t | json }}, 
+        htoCartTitle: {{ 'products.product.htoCartTitle' | t | json }}, 
+        htoCartAddMsg: {{ 'products.product.htoCartAddMsg' | t | json }}, 
+        htoCartAdd: {{ 'products.product.htoCartAdd' | t | json }}, 
+        htoCartRemove: {{ 'cart.general.remove' | t | json }}, 
+        htoCartFull: {{ 'products.product.htoCartFull' | t | json }}, 
+        htoZeroProductPopup: {{ settings.hto_pop | json}},  
+        htoSingleProduct: {{settings.htoSingleProduct | json}},
+        htoClearHTOTitle: {{settings.htoClearHTOTitle | json}},
+        htoClearHTOMsg: {{settings.htoClearHTOMsg | json}},
+        htoOOSTitle: {{settings.hto_oos_title | json}},
+        htoOOSMsg: {{settings.hto_oos_description | json}},
+        noHTOCountry: {{settings.noHTOCountry | json}},
+        noHTOCookieValidity: {{settings.noHTOValidity | json}},
+        htoToolTipFlag: {{settings.hto_tip_enabled | json}},  
+        htoAddedTip: {{settings.htoAddedTip | json}},
+        htoFullTip: {{settings.htoFullTip | json}}, 
+        filterSizesMap: {{settings.sizesMapping | json }},
+        templateName: {{ template.suffix | json }},
+        noHTOURL: {{settings.noHTOURL | json}},
+        {%- if template.name contains 'product' -%}
+          {%- assign advOpts = '' -%}
+          {%- assign advImgs = '' -%}
+          {%- for advOpt in product.metafields.global.non-adv-option_title -%} 
+            {%- capture advOpts -%}{{-advOpts-}}{{-advOpt-}}{%- unless forloop.last -%}| {%- endunless -%}{%- endcapture -%} 
+            {%- capture advImgs -%}{{-advImgs-}}{{- product.metafields.global.non-adv-option-image[forloop.index0] -}}{%- unless forloop.last -%}| {%- endunless -%}{%- endcapture -%} 
+          {%- endfor -%} 
+          {%- if advOpts != '' -%}
+               advOpts: {{-advOpts | json-}},          
+          {%- endif -%}
+          {%- if advImgs != '' -%}
+               advImgs: {{-advImgs | json-}},            
+          {%- endif -%}
+        {%- endif -%}
+        {%- if template.name contains 'collection' -%}
+        collectionTitle: {{-collection.title | json-}}, 
+        {%- endif -%}
+        cartItemCount: {{cart.item_count}},
+        htoCartDisclaimer: {{ 'products.product.htoCartDisclaimer' | t | json }},
+        cartFree: {{ 'cart.general.zero_price' | t | json }},
+        prescriptionSpcificOptions: {{ settings.prescription_options | json}},
+        nonPrescriptionSpcificOptions: {{ settings.non_prescription_options | json}},
+        shopDomain: {{ shop.domain | json}}, 
+        acCart: {{ settings.ac_cart | json}},
+        acCartValue: {{ settings.ac_cart_value | json}},
+        noHTOTag: {{settings.disable_hto_tag | json}}, 
+        htoProductCart: {{htoFound | json}},
+        invalidHTO: {{ 'cart.confirmation.invalidHTO' | t | json }},
+        invalidHTOMsg: {{ 'cart.confirmation.invalidHTOMsg' | t | json }},
+        removeHTO: {{ 'cart.confirmation.removeHTO' | t | json }},
+        removeItem: {{ 'cart.confirmation.removeItem' | t | json }}, 
+        hoursOn: {{settings.hours_on | json}}, 
+        hoursOff: {{settings.hours_off | json}},
+
+        smsExit: {{settings.smsExit | json}},
+        smsBuffer: {{settings.smsBuffer | json}}, 
+        smsPV: {{settings.smsPV | json}}, 
+        smsPageView: {{settings.smsBuffer | json}}, 
+        onlineKLSMS: {{settings.onlineKLSMS | json}},
+        offlineKLSMS: {{settings.offlineKLSMS | json}}, 
+        onlineSMS: {{settings.onlineSMS | json}},
+        offlineSMS: {{settings.offlineSMS | json}}, 
+
+
+        onlineKLSMSChat: {{settings.onlineKLSMSChat | json}},
+        offlineKLSMSChat: {{settings.offlineKLSMSChat | json}}, 
+        onlineSMSChat: {{settings.onlineSMSChat | json}},
+        offlineSMSChat: {{settings.offlineSMSChat | json}}, 
+        
+        exitDelay: {{settings.exitDelay | times: 1000 | json}},
+
+        template: {{ template.name | json }},
+ 
+
+        {%- assign product_types_string = settings.customDiscountProdTypes -%}
+        {%- assign product_types_array = product_types_string | split: ", " | json -%}
+
+        appliedDiscountCode: "",
+        autoDiscount: {{ settings.autoDiscount | json }},
+        autoDiscountPercentage: {{ settings.autoDiscountPercentage | default: 20 }},
+        autoDiscountTag: "{{ settings.autoDiscountTag | escape }}",
+        autoDiscountMsgPDP: "{{ settings.autoDiscountMsgPDP | raw  }}",
+        
+        customDiscountEnded: false,
+        customDiscountToggle: {{ settings.customDiscountToggle | json }},
+        customDiscountCode: "{{ settings.customDiscountCode | escape }}",
+        customDiscountCodeApplied: '{{ settings.customDiscountCodeApplied | raw }}',
+        customDiscountPercentage: {{ settings.customDiscountPercentage | default: 40 }},
+        customDiscountProdTypes: {{ product_types_array }},
+        customDiscountAppliedMsgPDP: "{{ settings.customDiscountAppliedMsgPDP | raw }}"
+
+
+
+    }
+    {% assign hto_product = '' %}         
+    {%- if settings.hto_product != blank -%}
+      {%- for productHTO in collections.hto.products  -%}
+        {%- if productHTO.handle == settings.hto_product -%}
+          {%- assign hto_product = productHTO -%}         
+        {%- endif -%}
+      {%- endfor -%}
+      {%- assign hto_variant = hto_product.selected_or_first_available_variant.id -%} 
+      var hto_variant = {{ hto_variant | json  }};
+      //var hto_variant = 39416327602343; //For subscription product
+      var is_hto_subscription = false;
+    {%- endif -%}      
+
+    var singleHTOVal = theme.custom.htoSingleProduct || "";
+    var singleHTOArr = singleHTOVal.split(', ');
+    </script>
 
     <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
@@ -63,6 +213,11 @@
     <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'standard-actions-override.js' | asset_url }}" defer="defer"></script>
+
+
+    
+    <script src="{{ 'custom-global.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'custom-hto.js' | asset_url }}" defer="defer"></script>
 
     {%- if settings.animations_reveal_on_scroll -%}
       <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
@@ -294,7 +449,7 @@
       {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
 
-   <link rel="preload" href="{{ 'custom-slate.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+   <link rel="preload" href="{{ 'custom-global.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   {%- if template contains 'product' -%}
     <link rel="preload" href="{{ 'custom-product.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   {%- elsif template contains 'index' -%}  
@@ -435,5 +590,10 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+    <div style="display:none">
+    {%- section 'section-disable-hto' -%} 
+    </div>
+
   </body>
 </html>

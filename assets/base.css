@@ -961,7 +961,9 @@ summary::-webkit-details-marker {
   .grid--2-col .grid__item {
     width: calc(50% - var(--grid-desktop-horizontal-spacing) / 2);
   }
-
+  .grid--5-col-tablet .grid__item {
+    width: calc(20% - var(--grid-desktop-horizontal-spacing) * 4 / 5);
+  }
   .grid--4-col-tablet .grid__item {
     width: calc(25% - var(--grid-desktop-horizontal-spacing) * 3 / 4);
   }

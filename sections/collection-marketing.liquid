@@ -1,0 +1,104 @@
+<script type="text/javascript">
+  var collection_handle = {{collection.handle | json}};
+   var grid_marketing =
+[
+{% for block in section.blocks %}
+  {% if block.type == 'grid-block'  %}
+    {%- capture imageCode -%}
+      {%- assign imgSizesVal = '991:283, 751:233, 641:352, 481:297, 361:449, 329' -%} 
+      {%- render 'responsive-image-picture',
+        src:block.settings.image, 
+        img-sizes:imgSizesVal, 
+        class:'', 
+        alt: block.settings.title, 
+        loading:'lazy'
+         -%} 
+    {%- endcapture -%}
+    {
+      type: 'custom-grid',
+      row: {{ block.settings.row | json }},
+      column: {{ block.settings.column | json }},
+      content: {{ block.settings.content | json }},
+      image: {{ imageCode | json }}, 
+    }{% unless forloop.last %}, {% else %}{% endunless %}               
+  {% else %}
+    {
+      type: {{ block.type | json }},
+      content: {{ block.settings.content | json }}, 
+      row: {{ block.settings.row  }}
+    }{% unless forloop.last %}, {% else %}{% endunless %}
+  {% endif %}
+{% endfor %}
+]  
+</script>
+{% schema %}
+{
+  "name": "Collection Marketing",
+  "max_blocks": 12,
+  "settings": [
+      
+  ],
+  "blocks": [
+    {
+      "type": "text-block",
+      "name": "Text Block",
+      "settings": [
+        {
+            "type": "html",
+            "id": "content",
+            "label": "Text Block HTML"
+        },
+        {
+          "type": "range",
+          "id": "row",
+          "label": "Text block row",
+          "min": 2,
+          "max": 30,
+          "step": 1,
+          "default": 2
+        }
+      ]
+    },
+    {
+      "type": "grid-block",
+      "name": "Grid Block",
+      "settings": [
+        {
+            "type": "html",
+            "id": "content",
+            "label": "Grid Block HTML"
+        },
+        {
+          "type": "range",
+          "id": "row",
+          "label": "Grid block row",
+          "min": 2,
+          "max": 30,
+          "step": 1,
+          "default": 2
+        },
+        {
+          "type": "range",
+          "id": "column",
+          "label": "Grid block column",
+          "min": 1,
+          "max": 3,
+          "step": 1,
+          "default": 1
+        }, 
+        {
+          "type": "image_picker",  
+          "id": "image",
+          "label": "Grid  Image"
+        }
+      ]
+    }
+  ],    
+  "presets": [
+    {
+      "name": "Collection Marketing",
+      "category": "Text"
+    }
+  ]    
+}
+{% endschema %}
